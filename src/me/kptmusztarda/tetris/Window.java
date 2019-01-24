@@ -7,7 +7,7 @@ public class Window extends JFrame {
     public Window() {
         setTitle("Tetris");
         setLayout(null);
-        setSize(400,600);
+        setSize(500,800);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
         setVisible(true);
