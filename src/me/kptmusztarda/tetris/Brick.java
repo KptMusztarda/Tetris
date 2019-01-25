@@ -2,17 +2,17 @@ package me.kptmusztarda.tetris;
 
 import java.awt.*;
 
-public class Brick {
+class Brick {
 
     private static final int[] STARTING_POSITION = {Main.SQUARES_HORIZONTALLY/2, 0};
-    public static final int TYPE_RANDOM = -1;
-    public static final int TYPE_I = 0;
-    public static final int TYPE_T = 1;
-    public static final int TYPE_O = 2;
-    public static final int TYPE_L = 3;
-    public static final int TYPE_J = 4;
-    public static final int TYPE_S = 5;
-    public static final int TYPE_Z = 6;
+    static final int TYPE_RANDOM = -1;
+    static final int TYPE_I = 0;
+    static final int TYPE_T = 1;
+    static final int TYPE_O = 2;
+    static final int TYPE_L = 3;
+    static final int TYPE_J = 4;
+    static final int TYPE_S = 5;
+    static final int TYPE_Z = 6;
 
     private static final boolean[][][] TYPES = {
 
@@ -40,62 +40,70 @@ public class Brick {
              {false, true}},
     };
 
-    public static final Color[] COLORS = {
+    static final Color[] COLORS = {
             Color.RED,
             Color.BLUE,
             Color.YELLOW,
             Color.GREEN,
             Color.CYAN,
             Color.MAGENTA,
-            Color.GRAY
+            Color.ORANGE
     };
+
+    private static int lastColor;
 
     private int x,y;
     private boolean[][] brick;
     private int color;
 
-    public Brick(int type) {
+    Brick(int type) {
         if(type == TYPE_RANDOM) type = (int)(Math.random()*TYPES.length);
         brick = TYPES[type];
         x = STARTING_POSITION[0];
         y = STARTING_POSITION[1];
-        color = (int)(Math.random()*COLORS.length);
+        do {
+            color = (int) (Math.random() * COLORS.length);
+            System.out.println("Randomized color: " + color);
+        }
+        while (color == lastColor);
+        System.out.println("Last color color: " + lastColor);
+        lastColor = color;
         System.out.println("Creating brick of TYPE " + type + " and COLOR " + color + " at " + x + "," + y);
     }
 
-    public int getX() {
+    int getX() {
         return x;
     }
 
-    public void setX(int x) {
+    void setX(int x) {
         this.x = x;
     }
 
-    public int getY() {
+    int getY() {
         return y;
     }
 
-    public void setY(int y) {
+    void setY(int y) {
         this.y = y;
     }
 
-    public int getWidth() {
+    int getWidth() {
         return brick.length;
     }
 
-    public int getHeight() {
+    int getHeight() {
         return brick[0].length;
     }
 
-    public boolean[][] getArray() {
+    boolean[][] getArray() {
         return brick;
     }
 
-    public int getColor() {
+    int getColorIndex() {
         return color;
     }
 
-    public int getLowestPointYAtWidth(int x) {
+    int getLowestPointYAtWidth(int x) {
         int lowest = y;
         for(int i=0; i<getHeight(); i++) {
             if(brick[x][i]) lowest = y+i;
@@ -103,11 +111,21 @@ public class Brick {
         return lowest;
     }
 
-    public int getLeftPointXAtHeight(int y) {
+    int getLeftPointXAtHeight(int y) {
         int left = x + getWidth();
         for(int i=getWidth()-1; i>=0; i--) {
-            if(brick[i][y]) left = x-i;
+            if(brick[i][y]) left = x+i;
         }
+        System.out.println("Left x at y=" + y + " is " + left);
         return left;
+    }
+
+    int getRightPointXAtHeight(int y) {
+        int right = x;
+        for(int i=0; i<getWidth(); i++) {
+            if(brick[i][y]) right = x+i;
+        }
+        System.out.println("Right x at y=" + y + " is " + right);
+        return right;
     }
 }

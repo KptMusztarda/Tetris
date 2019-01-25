@@ -5,7 +5,7 @@ import java.awt.event.KeyListener;
 
 public class MyKeyListener implements KeyListener {
 
-    Bricks bricks;
+    private Bricks bricks;
 
     @Override
     public void keyTyped(KeyEvent e) {
@@ -16,9 +16,9 @@ public class MyKeyListener implements KeyListener {
     public void keyPressed(KeyEvent e) {
         System.out.println("KeyEvent: " + e.getKeyCode());
         switch(e.getKeyCode()) {
-            case KeyEvent.VK_A: bricks.move(bricks.getBricks().size() - 1, Bricks.MOVE_LEFT); break;
-            case KeyEvent.VK_D: bricks.move(bricks.getBricks().size() - 1, Bricks.MOVE_RIGHT); break;
-            case KeyEvent.VK_S: bricks.move(bricks.getBricks().size() - 1, Bricks.MOVE_DOWN); break;
+            case KeyEvent.VK_A: bricks.move(Bricks.MOVE_LEFT); break;
+            case KeyEvent.VK_D: bricks.move(Bricks.MOVE_RIGHT); break;
+            case KeyEvent.VK_S: bricks.move(Bricks.MOVE_DOWN); break;
         }
         repaint();
     }
@@ -28,11 +28,11 @@ public class MyKeyListener implements KeyListener {
 
     }
 
-    protected void addBricks(Bricks bricks) {
+    void addBricks(Bricks bricks) {
         this.bricks = bricks;
     }
 
-    protected void repaint() {
+    void repaint() {
 
     }
 }

@@ -2,7 +2,6 @@ package me.kptmusztarda.tetris;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
 
 public class Renderer extends JPanel {
 
@@ -14,9 +13,9 @@ public class Renderer extends JPanel {
     private static int squaresVertically;
     private static int squaresHorizontally;
 
-    private ArrayList bricks;
+    private Bricks bricks;
 
-    public Renderer(int hor, int vert) {
+    Renderer(int hor, int vert) {
         squaresVertically = vert;
         squaresHorizontally = hor;
 
@@ -34,46 +33,47 @@ public class Renderer extends JPanel {
 
         System.out.println("Repainting");
 
-
-
-        for(int i=0; i<bricks.size(); i++) {
-            Brick brick = (Brick) bricks.get(i);
-            //System.out.println("Rendering brick " + i);
-
-            g.setColor(Brick.COLORS[brick.getColor()]);
-
+        //Draw active brick
+        Brick brick = bricks.getActiveBrick();
+        if(brick != null) {
             int[] position = {brick.getX(), brick.getY()};
-            for(int j=0; j<brick.getWidth(); j++) {
-                for(int k=0; k<brick.getHeight(); k++) {
-                    if(brick.getArray()[j][k]) {
-                        g.fillRect(
-                        (PANEL_BORDER) + ((position[0] + j) * SQUARE_SIDE_LENGTH) + ((position[0] + j + 1) * SPACING),
-                        (PANEL_BORDER) + ((position[1] + k) * SQUARE_SIDE_LENGTH) + ((position[1] + k + 1) * SPACING),
-                        SQUARE_SIDE_LENGTH,
-                        SQUARE_SIDE_LENGTH);
-                    }
-                }
-            }
+            for (int i = 0; i < brick.getWidth(); i++)
+                for (int j = 0; j < brick.getHeight(); j++)
+                    if (brick.getArray()[i][j])
+                        fillSquare(g, (position[0] + i), (position[1] + j), brick.getColorIndex());
         }
 
-        for(int i = 0; i< squaresHorizontally; i++) {
-            for(int j = 0; j< squaresVertically; j++) {
-//                g.fillRect(
-//                        (PANEL_BORDER) + (i * SQUARE_SIDE_LENGTH) + ((i + 1) * SPACING),
-//                        (PANEL_BORDER) + (j * SQUARE_SIDE_LENGTH) + ((j + 1) * SPACING),
-//                        SQUARE_SIDE_LENGTH,
-//                        SQUARE_SIDE_LENGTH);
-                if(Main.DEBUG) {
+
+        //Draw remaining bricks
+        int[][] field = bricks.getField();
+        for(int i=0; i<field.length; i++)
+            for(int j=0; j<field[0].length; j++)
+                if(field[i][j] > -1) fillSquare(g, i, j, field[i][j]);
+
+
+        if(Main.DEBUG)
+            for(int i = 0; i< squaresHorizontally; i++)
+                for(int j = 0; j< squaresVertically; j++) {
                     g.setColor(Color.RED);
                     g.drawString(i + "," + j,
                             (PANEL_BORDER) + (i * SQUARE_SIDE_LENGTH) + ((i + 1) * SPACING),
                             (PANEL_BORDER) + (j * SQUARE_SIDE_LENGTH) + ((j + 1) * SPACING) + SQUARE_SIDE_LENGTH/2);
                 }
-            }
-        }
+
+
+
     }
 
-    protected void addBricks(Bricks bricks) {
-        this.bricks = bricks.getBricks();
+    private void fillSquare(Graphics g, int x, int y, int colorIndex) {
+        g.setColor(Brick.COLORS[colorIndex]);
+        g.fillRect(
+                (PANEL_BORDER) + (x * SQUARE_SIDE_LENGTH) + ((x + 1) * SPACING),
+                (PANEL_BORDER) + (y * SQUARE_SIDE_LENGTH) + ((y + 1) * SPACING),
+                SQUARE_SIDE_LENGTH,
+                SQUARE_SIDE_LENGTH);
+    }
+
+    void addBricks(Bricks bricks) {
+        this.bricks = bricks;
     }
 }

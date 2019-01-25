@@ -2,9 +2,9 @@ package me.kptmusztarda.tetris;
 
 import javax.swing.*;
 
-public class Window extends JFrame {
+class Window extends JFrame {
 
-    public Window() {
+    Window() {
         setTitle("Tetris");
         setLayout(null);
         setSize(500,800);

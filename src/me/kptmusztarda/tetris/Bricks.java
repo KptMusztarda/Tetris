@@ -1,75 +1,96 @@
 package me.kptmusztarda.tetris;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 
-public class Bricks {
+class Bricks {
 
-    public static final int MOVE_DOWN = 0;
-    public static final int MOVE_LEFT = 1;
-    public static final int MOVE_RIGHT = 2;
+    static final int MOVE_DOWN = 0;
+    static final int MOVE_LEFT = 1;
+    static final int MOVE_RIGHT = 2;
 
-    private ArrayList<Brick> bricks;
+    private Brick activeBrick;
+    private int[][] field;
 
 
-    public Bricks() {
-        bricks = new ArrayList<>(1);
+    Bricks() {
+        field = new int[Main.SQUARES_HORIZONTALLY][Main.SQUARES_VERTICALLY];
+        for(int[] row : field)
+            Arrays.fill(row, -1);
+//        for (int[] row : field) {
+//            for (int j = 0; j < field[0].length; j++)
+//                System.out.print(row[j] + " ");
+//            System.out.print("\n");
+//        }
     }
 
-    public void createNew(int type) {
-        bricks.add(new Brick(type));
+    void createNew(int type) {
+        if(activeBrick != null) {
+            for (int i = 0; i < activeBrick.getWidth(); i++)
+                for (int j = 0; j < activeBrick.getHeight(); j++)
+                    if (activeBrick.getArray()[i][j])
+                        field[activeBrick.getX() + i][activeBrick.getY() + j] = activeBrick.getColorIndex();
+        }
+        activeBrick = new Brick(type);
     }
 
-    public void move(int brick_id, int direction) {
+    void move(int direction) {
 
-        Brick brick = bricks.get(brick_id);
         boolean isPossibleToMove = true;
 
         switch(direction) {
 
             case MOVE_DOWN:
-                //check if blocks under the brick are empty
-                for(int i=0; i < brick.getWidth(); i++)
-                    if(!isEmpty(brick.getX() + i, brick.getLowestPointYAtWidth(i) + 1)) isPossibleToMove = false;
 
                 //check if the brick hits the ground
-                if(brick.getY() + brick.getHeight() > Main.SQUARES_VERTICALLY - 1) isPossibleToMove = false;
+                if(activeBrick.getY() + activeBrick.getHeight() < Main.SQUARES_VERTICALLY) {
+                    //check if blocks under the brick are empty
+                    for(int i=0; i < activeBrick.getWidth(); i++)
+                        if(!isEmpty(activeBrick.getX() + i, activeBrick.getLowestPointYAtWidth(i) + 1)) isPossibleToMove = false;
+                } else isPossibleToMove = false;
 
 
                 if(isPossibleToMove) {
-                    System.out.println("Moving brick " + brick_id + " down");
-                    brick.setY(brick.getY() + 1);
+                    System.out.println("Moving brick active brick down");
+                    activeBrick.setY(activeBrick.getY() + 1);
                 } else {
-                    System.out.println("Stopping brick " + brick_id);
+                    System.out.println("Stopping active brick");
                     createNew(Brick.TYPE_RANDOM);
                 }
                 break;
 
             case MOVE_LEFT:
-                //check if blocks on the left of the brick are empty
-                for(int i=0; i < brick.getHeight(); i++)
-                    if(!isEmpty(brick.getLeftPointXAtHeight(i) - 1, brick.getY() + i)) isPossibleToMove = false;
 
                 //check if the brick hits the left wall
-                if(brick.getX() <= 0) isPossibleToMove = false;
+                if(activeBrick.getX() > 0) {
+                    //check if blocks on the left of the brick are empty
+                    for(int i=0; i < activeBrick.getHeight(); i++)
+                        if(!isEmpty(activeBrick.getLeftPointXAtHeight(i) - 1, activeBrick.getY() + i)) isPossibleToMove = false;
+                } else isPossibleToMove = false;
 
 
                 if(isPossibleToMove) {
-                    brick.setX(brick.getX() - 1);
-                    System.out.println("Moving brick " + brick_id + " left");
+                    activeBrick.setX(activeBrick.getX() - 1);
+                    System.out.println("Moving active brick left");
                 } else {
-                    System.out.println("Unable to move brick " + brick_id + " left");
+                    System.out.println("Unable to move active brick left");
                 }
                 break;
 
             case MOVE_RIGHT:
-                if(brick.getX() + brick.getWidth() > Main.SQUARES_HORIZONTALLY) isPossibleToMove = false;
+
+                //check if the brick hits the right wall
+                if(activeBrick.getX() + activeBrick.getWidth() < Main.SQUARES_HORIZONTALLY) {
+                    //check if blocks on the right of the brick are empty
+                    for(int i=0; i < activeBrick.getHeight(); i++)
+                        if(!isEmpty(activeBrick.getRightPointXAtHeight(i) + 1, activeBrick.getY() + i)) isPossibleToMove = false;
+                } else isPossibleToMove = false;
 
 
                 if(isPossibleToMove) {
-                    brick.setX(brick.getX() + 1);
-                    System.out.println("Moving brick " + brick_id + " right");
+                    activeBrick.setX(activeBrick.getX() + 1);
+                    System.out.println("Moving active brick right");
                 } else {
-                    System.out.println("Unable to move brick " + brick_id + " right");
+                    System.out.println("Unable to move active brick right");
                 }
                 break;
 
@@ -77,23 +98,15 @@ public class Bricks {
     }
 
     private boolean isEmpty(int x, int y) {
-        boolean isEmpty = true;
-
-        for(Brick brick : bricks) {
-            int[] position = {brick.getX(), brick.getY()};
-            for(int i=0; i<brick.getWidth(); i++) {
-                for(int j=0; j<brick.getHeight(); j++) {
-                    System.out.println("Checking position " + x + "," + y + " with: position[0]=" + position[0] + " i=" + i + " position[1]=" + position[1] + " j=" + j + " empty?" + brick.getArray()[i][j]);
-                    if(position[0] + i == x && position[1] + j == y && brick.getArray()[i][j]) isEmpty = false;
-                }
-            }
-        }
-
-        return isEmpty;
+        return field[x][y] == -1;
     }
 
-    protected ArrayList getBricks() {
-        return bricks;
+    Brick getActiveBrick() {
+        return activeBrick;
+    }
+
+    int[][] getField() {
+        return field;
     }
 
 }
