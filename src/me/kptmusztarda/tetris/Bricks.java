@@ -27,12 +27,14 @@ public class Bricks {
         switch(direction) {
 
             case MOVE_DOWN:
-                for(int i=0; i < brick.getWidth(); i++) {
-                    //check if blocks under the brick are empty
+                //check if blocks under the brick are empty
+                for(int i=0; i < brick.getWidth(); i++)
                     if(!isEmpty(brick.getX() + i, brick.getLowestPointYAtWidth(i) + 1)) isPossibleToMove = false;
-                    //check if the brick hits the ground
-                    if(brick.getLowestPointYAtWidth(i) + 1 > Main.SQUARES_VERTICALLY - 1) isPossibleToMove = false;
-                }
+
+                //check if the brick hits the ground
+                if(brick.getY() + brick.getHeight() > Main.SQUARES_VERTICALLY - 1) isPossibleToMove = false;
+
+
                 if(isPossibleToMove) {
                     System.out.println("Moving brick " + brick_id + " down");
                     brick.setY(brick.getY() + 1);
@@ -43,6 +45,11 @@ public class Bricks {
                 break;
 
             case MOVE_LEFT:
+                //check if blocks on the left of the brick are empty
+                for(int i=0; i < brick.getHeight(); i++)
+                    if(!isEmpty(brick.getLeftPointXAtHeight(i) - 1, brick.getY() + i)) isPossibleToMove = false;
+
+                //check if the brick hits the left wall
                 if(brick.getX() <= 0) isPossibleToMove = false;
 
 
@@ -55,7 +62,7 @@ public class Bricks {
                 break;
 
             case MOVE_RIGHT:
-                if(brick.getX() >= 19) isPossibleToMove = false;
+                if(brick.getX() + brick.getWidth() > Main.SQUARES_HORIZONTALLY) isPossibleToMove = false;
 
 
                 if(isPossibleToMove) {
@@ -76,7 +83,7 @@ public class Bricks {
             int[] position = {brick.getX(), brick.getY()};
             for(int i=0; i<brick.getWidth(); i++) {
                 for(int j=0; j<brick.getHeight(); j++) {
-                    //System.out.println("Checking position " + x + "," + y + " with: position[0]=" + position[0] + " i=" + i + " position[0]=" + position[0] + " j=" + j + "empty?" + brick.getArray()[i][j]);
+                    System.out.println("Checking position " + x + "," + y + " with: position[0]=" + position[0] + " i=" + i + " position[1]=" + position[1] + " j=" + j + " empty?" + brick.getArray()[i][j]);
                     if(position[0] + i == x && position[1] + j == y && brick.getArray()[i][j]) isEmpty = false;
                 }
             }

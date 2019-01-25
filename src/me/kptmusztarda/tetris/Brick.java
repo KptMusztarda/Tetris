@@ -102,4 +102,12 @@ public class Brick {
         }
         return lowest;
     }
+
+    public int getLeftPointXAtHeight(int y) {
+        int left = x + getWidth();
+        for(int i=getWidth()-1; i>=0; i--) {
+            if(brick[i][y]) left = x-i;
+        }
+        return left;
+    }
 }

@@ -21,28 +21,16 @@ public class Main {
 
         Renderer renderer = new Renderer(SQUARES_HORIZONTALLY, SQUARES_VERTICALLY);
         renderer.addBricks(bricks);
-        renderer.addKeyListener(new KeyListener() {
+        MyKeyListener keyListener = new MyKeyListener() {
             @Override
-            public void keyTyped(KeyEvent e) {
-
+            protected void repaint() {
+                renderer.repaint();
             }
-
-            @Override
-            public void keyPressed(KeyEvent e) {
-                System.out.println("KeyEvent: " + e.getKeyCode());
-                switch(e.getKeyCode()) {
-                    case KeyEvent.VK_A: bricks.move(bricks.getBricks().size() - 1, Bricks.MOVE_LEFT); break;
-                    case KeyEvent.VK_D: bricks.move(bricks.getBricks().size() - 1, Bricks.MOVE_RIGHT); break;
-                    case KeyEvent.VK_S: bricks.move(bricks.getBricks().size() - 1, Bricks.MOVE_DOWN); break;
-                }
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-
-            }
-        });
+        };
+        keyListener.addBricks(bricks);
+        window.addKeyListener(keyListener);
         mainPanel.add(renderer);
+        renderer.repaint();
 
         bricks.createNew(Brick.TYPE_Z);
 
@@ -56,6 +44,6 @@ public class Main {
             }
         }, 1000, 1000);
 
-
     }
+
 }
