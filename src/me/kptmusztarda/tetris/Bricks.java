@@ -22,11 +22,11 @@ public class Bricks {
     public void move(int brick_id, int direction) {
 
         Brick brick = bricks.get(brick_id);
+        boolean isPossibleToMove = true;
 
         switch(direction) {
 
             case MOVE_DOWN:
-                boolean isPossibleToMove = true;
                 for(int i=0; i < brick.getWidth(); i++) {
                     //check if blocks under the brick are empty
                     if(!isEmpty(brick.getX() + i, brick.getLowestPointYAtWidth(i) + 1)) isPossibleToMove = false;
@@ -40,8 +40,32 @@ public class Bricks {
                     System.out.println("Stopping brick " + brick_id);
                     createNew(Brick.TYPE_RANDOM);
                 }
-
                 break;
+
+            case MOVE_LEFT:
+                if(brick.getX() <= 0) isPossibleToMove = false;
+
+
+                if(isPossibleToMove) {
+                    brick.setX(brick.getX() - 1);
+                    System.out.println("Moving brick " + brick_id + " left");
+                } else {
+                    System.out.println("Unable to move brick " + brick_id + " left");
+                }
+                break;
+
+            case MOVE_RIGHT:
+                if(brick.getX() >= 19) isPossibleToMove = false;
+
+
+                if(isPossibleToMove) {
+                    brick.setX(brick.getX() + 1);
+                    System.out.println("Moving brick " + brick_id + " right");
+                } else {
+                    System.out.println("Unable to move brick " + brick_id + " right");
+                }
+                break;
+
         }
     }
 
