@@ -14,6 +14,7 @@ class Brick {
     static final int TYPE_S = 5;
     static final int TYPE_Z = 6;
 
+    //[type][column][row]
     private static final boolean[][][] TYPES = {
 
             {{  true, true, true, true}},   //TYPE_I
@@ -40,6 +41,16 @@ class Brick {
              {false, true}},
     };
 
+    private static final int[][] PIVOTS= {
+        {0,1},
+        {1,0},
+        {0,0},
+        {1,1},
+        {0,1},
+        {1,0},
+        {1,0},
+    };
+
     static final Color[] COLORS = {
             Color.RED,
             Color.BLUE,
@@ -54,12 +65,14 @@ class Brick {
 
     private int x,y;
     private boolean[][] brick;
+    private int[] pivot;
     private int color;
 
     Brick(int type) {
         if(type == TYPE_RANDOM) type = (int)(Math.random()*TYPES.length);
         brick = TYPES[type];
-        x = STARTING_POSITION[0];
+        pivot = PIVOTS[type];
+        x = STARTING_POSITION[0] - pivot[0];
         y = STARTING_POSITION[1];
         do {
             color = (int) (Math.random() * COLORS.length);
@@ -95,8 +108,20 @@ class Brick {
         return brick[0].length;
     }
 
+    public int[] getPivot() {
+        return pivot;
+    }
+
+    public void setPivot(int[] pivot) {
+        this.pivot = pivot;
+    }
+
     boolean[][] getArray() {
         return brick;
+    }
+
+    void setArray(boolean[][] arr) {
+        brick = arr;
     }
 
     int getColorIndex() {
@@ -116,7 +141,7 @@ class Brick {
         for(int i=getWidth()-1; i>=0; i--) {
             if(brick[i][y]) left = x+i;
         }
-        System.out.println("Left x at y=" + y + " is " + left);
+        //System.out.println("Left x at y=" + y + " is " + left);
         return left;
     }
 
@@ -125,7 +150,7 @@ class Brick {
         for(int i=0; i<getWidth(); i++) {
             if(brick[i][y]) right = x+i;
         }
-        System.out.println("Right x at y=" + y + " is " + right);
+        //System.out.println("Right x at y=" + y + " is " + right);
         return right;
     }
 }

@@ -7,6 +7,8 @@ class Bricks {
     static final int MOVE_DOWN = 0;
     static final int MOVE_LEFT = 1;
     static final int MOVE_RIGHT = 2;
+    static final int ROTATE_CLOCKWISE = 3;
+    static final int ROTATE_COUNTERCLOCKWISE = 4;
 
     private Brick activeBrick;
     private int[][] field;
@@ -23,17 +25,41 @@ class Bricks {
 //        }
     }
 
-    void createNew(int type) {
+    private void stopActiveBrick() {
         if(activeBrick != null) {
             for (int i = 0; i < activeBrick.getWidth(); i++)
                 for (int j = 0; j < activeBrick.getHeight(); j++)
                     if (activeBrick.getArray()[i][j])
                         field[activeBrick.getX() + i][activeBrick.getY() + j] = activeBrick.getColorIndex();
         }
+        System.out.println("Stopping brick");
+    }
+
+    private void checkForFullLines() {
+        for(int i=field[0].length-1; i>=0; i--) {
+            //System.out.println("Checking line " + i);
+            int blocksInLine = 0;
+            for(int j=0; j<field.length; j++)
+                if(!isEmpty(j, i)) blocksInLine++;
+            //System.out.println("Blocks in line: " + blocksInLine);
+            if(blocksInLine == field.length)
+                deleteLine(i++);
+        }
+    }
+
+    private void deleteLine(int y) {
+        System.out.println("Deleting line " + y);
+        for(int i=y; i>0; i--)
+            for(int j=0; j<field.length; j++)
+                field[j][i] = field[j][i-1];
+    }
+
+    void createNew(int type) {
+
         activeBrick = new Brick(type);
     }
 
-    void move(int direction) {
+    void moveActive(int direction) {
 
         boolean isPossibleToMove = true;
 
@@ -50,10 +76,11 @@ class Bricks {
 
 
                 if(isPossibleToMove) {
-                    System.out.println("Moving brick active brick down");
+                    System.out.println("Moving brick down");
                     activeBrick.setY(activeBrick.getY() + 1);
                 } else {
-                    System.out.println("Stopping active brick");
+                    stopActiveBrick();
+                    checkForFullLines();
                     createNew(Brick.TYPE_RANDOM);
                 }
                 break;
@@ -70,9 +97,9 @@ class Bricks {
 
                 if(isPossibleToMove) {
                     activeBrick.setX(activeBrick.getX() - 1);
-                    System.out.println("Moving active brick left");
+                    System.out.println("Moving brick left");
                 } else {
-                    System.out.println("Unable to move active brick left");
+                    System.out.println("Unable to move brick left");
                 }
                 break;
 
@@ -88,13 +115,76 @@ class Bricks {
 
                 if(isPossibleToMove) {
                     activeBrick.setX(activeBrick.getX() + 1);
-                    System.out.println("Moving active brick right");
+                    System.out.println("Moving brick right");
                 } else {
-                    System.out.println("Unable to move active brick right");
+                    System.out.println("Unable to brick right");
                 }
                 break;
 
         }
+    }
+
+    void rotateActive(int direction) {
+
+        boolean[][] rotated_brick = new boolean[activeBrick.getHeight()][activeBrick.getWidth()];
+        int[] newPivot = new int[2];
+        int[] newPosition = new int[2];
+
+        switch (direction) {
+            case ROTATE_CLOCKWISE:
+
+                for(int i=0; i<rotated_brick.length; i++) {
+                    for(int j=0; j<rotated_brick[0].length; j++) {
+                        rotated_brick[i][j] = activeBrick.getArray()[j][activeBrick.getHeight() - 1 - i];
+                    }
+                }
+
+                newPivot[0] = activeBrick.getPivot()[1];
+                newPivot[1] = activeBrick.getWidth() - 1 - activeBrick.getPivot()[0];
+
+                break;
+            case ROTATE_COUNTERCLOCKWISE:
+
+                for(int i=0; i<rotated_brick.length; i++) {
+                    for(int j=0; j<rotated_brick[0].length; j++) {
+                        rotated_brick[i][j] = activeBrick.getArray()[activeBrick.getWidth() - 1 - j][i];
+                    }
+                }
+
+                newPivot[0] = activeBrick.getHeight() - 1 - activeBrick.getPivot()[1];
+                newPivot[1] = activeBrick.getPivot()[0];
+
+                break;
+        }
+
+        //System.out.println("Old pivot: " + activeBrick.getPivot()[0] + "," + activeBrick.getPivot()[1]);
+        //System.out.println("New pivot: " + newPivot[0] + "," + newPivot[1]);
+
+
+        newPosition[0] = activeBrick.getX() - (rotated_brick.length - 1 - newPivot[0]) + (activeBrick.getWidth() - 1 - activeBrick.getPivot()[0]);
+        newPosition[1] = activeBrick.getY() - newPivot[1] + activeBrick.getPivot()[1];
+
+        boolean isPossibleToRotate = true;
+
+        try {
+            for (int i = 0; i < rotated_brick.length; i++)
+                for (int j = 0; j < rotated_brick[0].length; j++)
+                    if (rotated_brick[i][j])
+                        if (!isEmpty(newPosition[0] + i, newPosition[1] + j))
+                            isPossibleToRotate = false;
+        } catch (IndexOutOfBoundsException e) {
+            isPossibleToRotate = false;
+        }
+
+        if(isPossibleToRotate) {
+            activeBrick.setArray(rotated_brick);
+            activeBrick.setPivot(newPivot);
+            activeBrick.setX(newPosition[0]);
+            activeBrick.setY(newPosition[1]);
+            System.out.print("Rotating brick ");
+        } else
+            System.out.print("Unable to rotate brick ");
+        System.out.println(direction == ROTATE_CLOCKWISE ? "clockwise" : "counterclockwise");
     }
 
     private boolean isEmpty(int x, int y) {

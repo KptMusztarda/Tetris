@@ -31,7 +31,7 @@ public class Renderer extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        System.out.println("Repainting");
+        //System.out.println("Repainting");
 
         //Draw active brick
         Brick brick = bricks.getActiveBrick();

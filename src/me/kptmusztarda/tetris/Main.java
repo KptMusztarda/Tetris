@@ -28,20 +28,23 @@ public class Main {
         keyListener.addBricks(bricks);
         window.addKeyListener(keyListener);
         mainPanel.add(renderer);
+
+        window.calculateAndSetSize();
+
+
         renderer.repaint();
 
-        bricks.createNew(Brick.TYPE_Z);
+        bricks.createNew(Brick.TYPE_T);
 
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                System.out.println("Tick");
-                bricks.move(Bricks.MOVE_DOWN);
-                renderer.repaint();
+                //System.out.println("Tick");
+                //bricks.moveActive(Bricks.MOVE_DOWN);
+                //renderer.repaint();
             }
-        }, 1000, 1000);
-
+        }, 0, 1000);
     }
 
 }
