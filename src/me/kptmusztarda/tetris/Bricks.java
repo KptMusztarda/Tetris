@@ -25,6 +25,12 @@ class Bricks {
 //        }
     }
 
+    void clear() {
+        for(int[] row : field)
+            Arrays.fill(row, -1);
+        activeBrick = null;
+    }
+
     private void stopActiveBrick() {
         if(activeBrick != null) {
             for (int i = 0; i < activeBrick.getWidth(); i++)
@@ -36,15 +42,23 @@ class Bricks {
     }
 
     private void checkForFullLines() {
+        int deletedLines = 0;
         for(int i=field[0].length-1; i>=0; i--) {
             //System.out.println("Checking line " + i);
             int blocksInLine = 0;
             for(int j=0; j<field.length; j++)
                 if(!isEmpty(j, i)) blocksInLine++;
             //System.out.println("Blocks in line: " + blocksInLine);
-            if(blocksInLine == field.length)
+            if(blocksInLine == field.length) {
                 deleteLine(i++);
+                deletedLines++;
+            }
         }
+        if(deletedLines > 0) onDeletedLines(deletedLines);
+    }
+
+    void onDeletedLines(int fullLines) {
+
     }
 
     private void deleteLine(int y) {
@@ -55,8 +69,24 @@ class Bricks {
     }
 
     void createNew(int type) {
+        Brick brick = new Brick(type);
+        boolean gameOver = false;
+        outerLoop:
+        for(int i=0; i<brick.getWidth(); i++){
+            for(int j=0; j<brick.getHeight(); j++) {
+                System.out.println("Checking field " + (brick.getX() + brick.getWidth() - 1 - i) + ", " + (brick.getY() + j));
+                if(brick.getArray()[i][j] && !isEmpty(brick.getX() + brick.getWidth() - 1 - i, brick.getY() + j)) {
+                    gameOver = true;
+                    break outerLoop;
+               }
+            }
+        }
 
-        activeBrick = new Brick(type);
+        if(gameOver) onGameOver();
+        else activeBrick = brick;
+    }
+
+    void onGameOver() {
     }
 
     void moveActive(int direction) {

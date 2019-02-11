@@ -58,7 +58,10 @@ class Brick {
             Color.GREEN,
             Color.CYAN,
             Color.MAGENTA,
-            Color.ORANGE
+            Color.ORANGE,
+            Color.GRAY,
+            Color.LIGHT_GRAY,
+            Color.PINK
     };
 
     private static int lastColor;
